@@ -50,17 +50,11 @@ def get_reverse_complement(dna):
     >>> get_reverse_complement("CCGCGTTCA")
     'TGAACGCGG'
     """
-
-
-
-    # dnaindex = list(dna)
-    # dnareverseindex = [None] * len(dna)
-
-    # for i in (range(0, len(dna))):
-    #     dnareverseindex[i] = get_complement(dnaindex[i])
-
-    # list.reverse(dnareverseindex)
-    # return str(dnareverseindex)
+    reversecomplement = ''
+    reversedna = dna[::-1]
+    for i in range(0, len(dna)):
+        reversecomplement = reversecomplement + get_complement(reversedna[i])
+    return reversecomplement
 
 def rest_of_ORF(dna):
     """ Takes a DNA sequence that is assumed to begin with a start
@@ -102,14 +96,13 @@ def find_all_ORFs_oneframe(dna, index):
     """
 
     StartCodon = 'ATG'
-    i = 0
     ORF_list = []
 
     while index < len(dna):
         codon = dna[index:index+3]
         if codon == StartCodon:
             ORF_list.append(rest_of_ORF(dna[index:len(dna)]))
-            i = i + 1
+            index = index + len(dna)
         index = index + 3
     return ORF_list
 
@@ -130,7 +123,8 @@ def find_all_ORFs(dna):
     complete_ORF_list = []
 
     for n in range(0, 3):
-        complete_ORF_list.append(find_all_ORFs_oneframe(dna, n))
+        if find_all_ORFs_oneframe(dna, n) != []:
+            complete_ORF_list.append(find_all_ORFs_oneframe(dna, n))
     return complete_ORF_list
 
 def find_all_ORFs_both_strands(dna):
@@ -142,12 +136,11 @@ def find_all_ORFs_both_strands(dna):
     >>> find_all_ORFs_both_strands("ATGCGAATGTAGCATCAAA")
     ['ATGCGAATG', 'ATGCTACATTCGCAT']
     """
-    print 'shyren'
 
+    Really_Complete_ORF_List = find_all_ORFs(dna) + find_all_ORFs(get_reverse_complement(dna))
+    return Really_Complete_ORF_List
 
-    print get_reverse_complement(dna)
-
-find_all_ORFs_both_strands("ATGCGAATGTAGCATCAAA")
+print find_all_ORFs_both_strands("ATGCGAATGTAGCATCAAA")
 
 def longest_ORF(dna):
     """ Finds the longest ORF on both strands of the specified DNA and returns it
